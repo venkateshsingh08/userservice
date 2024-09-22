@@ -74,6 +74,13 @@ public class UserServiceImpl implements UserService{
     @Override
     public void logout(String Token) {
 
+        Optional<Token> tokenOptional = tokenRepository.
+                findByValueAndDeletedAndExpiryAtGreaterThan(Token, false, new Date());
+        if(!tokenOptional.isPresent()){
+            //Throw exception.
+        }
+            tokenOptional.get().setDeleted(true);
+            tokenRepository.save(tokenOptional.get());
     }
 
     private Token createToken(User user){
