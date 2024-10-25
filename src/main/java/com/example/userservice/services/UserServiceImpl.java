@@ -1,13 +1,16 @@
 package com.example.userservice.services;
 
+import com.example.userservice.dtos.SendEmailDto;
 import com.example.userservice.models.Token;
 import com.example.userservice.models.User;
 import com.example.userservice.repositories.TokenRepository;
 import com.example.userservice.repositories.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,9 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     private TokenRepository tokenRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private KafkaTemplate<String,String> kafkaTemplate;
+
+    private ObjectMapper objectMapper;
 
     public UserServiceImpl(UserRepository userRepository,TokenRepository tokenRepository,
                            BCryptPasswordEncoder bCryptPasswordEncoder){
@@ -37,6 +43,19 @@ public class UserServiceImpl implements UserService{
         user.setName(name);
         user.setEmail(email);
         user.setHashedPassword(bCryptPasswordEncoder.encode(password));
+
+
+        SendEmailDto sendEmailDto = new SendEmailDto();
+        sendEmailDto.setFromEmail("tovenkatesh82@gmail.com");
+        sendEmailDto.setToEmail(email);
+        sendEmailDto.setSubject("Welcome");
+        sendEmailDto.setBody("welcome to sclaer");
+
+        String sendEmailDtoString = null;
+        //sendEmailDtoString = objectMapper.writeValueAsString()
+
+
+
 
         return userRepository.save(user);
     }
