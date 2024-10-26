@@ -45,13 +45,13 @@ public class UserServiceImpl implements UserService{
         user.setHashedPassword(bCryptPasswordEncoder.encode(password));
 
 
-        SendEmailDto sendEmailDto = new SendEmailDto();
-        sendEmailDto.setFromEmail("tovenkatesh82@gmail.com");
-        sendEmailDto.setToEmail(email);
-        sendEmailDto.setSubject("Welcome");
-        sendEmailDto.setBody("welcome to sclaer");
+//        SendEmailDto sendEmailDto = new SendEmailDto();
+//        sendEmailDto.setFromEmail("tovenkatesh82@gmail.com");
+//        sendEmailDto.setToEmail(email);
+//        sendEmailDto.setSubject("Welcome");
+//        sendEmailDto.setBody("welcome to sclaer");
 
-        String sendEmailDtoString = null;
+//        String sendEmailDtoString = null;
         //sendEmailDtoString = objectMapper.writeValueAsString()
 
 

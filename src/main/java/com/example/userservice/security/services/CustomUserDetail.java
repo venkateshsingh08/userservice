@@ -2,22 +2,28 @@ package com.example.userservice.security.services;
 
 import com.example.userservice.models.Role;
 import com.example.userservice.models.User;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@JsonDeserialize
+@Setter
+@NoArgsConstructor
 public class CustomUserDetail implements UserDetails {
 
     private String username;
     private String password;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
-    private boolean credentialNonExpired;
+    private boolean credentialsNonExpired;
     private boolean enabled;
 
-    private List<GrantedAuthority>grantedAuthorities;
+    private List<GrantedAuthority>authorities;
 
     public CustomUserDetail(User user){
 
@@ -25,23 +31,24 @@ public class CustomUserDetail implements UserDetails {
         this.password = user.getHashedPassword();
         this.accountNonExpired= true;
         this.accountNonLocked = true;
-        this.credentialNonExpired = true;
+        this.credentialsNonExpired = true;
         this.enabled = true;
-        this.grantedAuthorities = new ArrayList<>();
+        this.authorities = new ArrayList<>();
 
         for(Role role: user.getRoles()){
-            grantedAuthorities.add(new CustomGrantedAuthority(role));
+            authorities.add(new CustomGrantedAuthority(role));
         }
 
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override
     public String getPassword() {
+
         return password;
     }
 
@@ -62,7 +69,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return credentialNonExpired;
+        return credentialsNonExpired;
     }
 
     @Override
