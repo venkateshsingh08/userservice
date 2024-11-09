@@ -5,6 +5,7 @@ import com.example.userservice.models.Token;
 import com.example.userservice.models.User;
 import com.example.userservice.repositories.TokenRepository;
 import com.example.userservice.repositories.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,10 +27,12 @@ public class UserServiceImpl implements UserService{
     private ObjectMapper objectMapper;
 
     public UserServiceImpl(UserRepository userRepository,TokenRepository tokenRepository,
-                           BCryptPasswordEncoder bCryptPasswordEncoder){
+                           BCryptPasswordEncoder bCryptPasswordEncoder,KafkaTemplate kafkaTemplate){
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = new ObjectMapper();
     }
     @Override
     public User signUp(String name, String email, String password) {
@@ -45,19 +48,25 @@ public class UserServiceImpl implements UserService{
         user.setHashedPassword(bCryptPasswordEncoder.encode(password));
 
 
-//        SendEmailDto sendEmailDto = new SendEmailDto();
-//        sendEmailDto.setFromEmail("tovenkatesh82@gmail.com");
-//        sendEmailDto.setToEmail(email);
-//        sendEmailDto.setSubject("Welcome");
-//        sendEmailDto.setBody("welcome to sclaer");
+        SendEmailDto sendEmailDto = new SendEmailDto();
+        sendEmailDto.setFromEmail("tovenkatesh82@gmail.com");
+        sendEmailDto.setToEmail(email);
+        sendEmailDto.setSubject("Welcome");
+        sendEmailDto.setBody("welcome to sclaer");
 
-//        String sendEmailDtoString = null;
-        //sendEmailDtoString = objectMapper.writeValueAsString()
+        String sendEmailDtoString = null;
+        try {
+            sendEmailDtoString = objectMapper.writeValueAsString(sendEmailDto);
+        } catch (JsonProcessingException e) {
+            System.out.println("something went wrong while converting to String");
+        }
 
 
 
+        User user1 = userRepository.save(user);
+        kafkaTemplate.send("emailSend",sendEmailDtoString);
 
-        return userRepository.save(user);
+        return user1;
     }
 
     @Override
