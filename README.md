@@ -23,6 +23,7 @@ The User Service is responsible for user registration, authentication, token val
     
     Description: validates the token provided in request header.
 
+
     Method: POST
     
     Endpoint: /logout
